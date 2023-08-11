@@ -26,3 +26,12 @@ Content-Type: application/json
     "username":"veerendra45",
     "password": "2023"
 }
+
+###
+POST  http://localhost:3500/post/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
+Content-Type: application/json
+
+{
+    "post" : "Happy Independence Day"
+}
