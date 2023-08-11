@@ -4,6 +4,7 @@ const {open} = require("sqlite");
 const sqlite3 = require("sqlite3");
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
+const { format } = require('date-fns');
 
 const path = require("path")
 
@@ -101,7 +102,6 @@ app.post('/users', async(request,response)=>{
 });
 
 // creating an api for login 
-
 app.post('/login', async(request, response)=>{
     try{
         const {username, password} = request.body;
@@ -134,7 +134,40 @@ app.post('/login', async(request, response)=>{
     }
 });
 
+//creating new post 
+app.post('/post',authenticateToken, async (request, response)=>{
+    try{
+        const {post} = request.body;
+        const username = request.username
+        const selectUserQuery = `
+            SELECT * FROM user where username = '${username}';
+        `;
+        const userDetails = await db.get(selectUserQuery);
+        const userId = userDetails.id;
+        const formattedDateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        
+        const createPostQuery = `
+            INSERT INTO 
+                post (post, user_id, date_time)
+            VALUES
+                ('${post}',
+                ${userId},
+                '${formattedDateTime}'
+                );
+        `;
+        await db.run(createPostQuery);
+        response.send("post created successfully");
+    }catch(e){
+        console.log(`Error when creating post ${e.message}`);
+    }
+});
 
+// getting posts list
 
+// updating post 
+
+// deleting post
+
+// creating new like
 
 module.exports = app
