@@ -32,9 +32,30 @@ const initializeDbAndConnectToServer = async ()=>{
 }
 initializeDbAndConnectToServer();
 
+//creating middleware for authentication
+const authenticateToken = (request, response, next) => {
+    let jwtToken;
+    const authHeader = request.headers["authorization"];
+    if (authHeader !== undefined) {
+      jwtToken = authHeader.split(" ")[1];
+    }
+    if (jwtToken === undefined) {
+      response.status(401);
+      response.send("Invalid JWT Token");
+    } else {
+      jwt.verify(jwtToken, "SET_PRODUCTION_SECRET_KEY_HERE", async (error, payload) => {
+        if (error) {
+          response.status(401);
+          response.send("Invalid JWT Token");
+        } else {
+          request.username = payload.username;
+          next();
+        }
+      });
+    }
+  };
 
-
-app.get('/', async(request,response)=>{
+app.get('/', authenticateToken,async(request,response)=>{
     response.send("Server running successfully")
 });
 
@@ -113,7 +134,7 @@ app.post('/login', async(request, response)=>{
     }
 });
 
-//
+
 
 
 module.exports = app
