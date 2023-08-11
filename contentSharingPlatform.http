@@ -1,0 +1,28 @@
+###
+
+GET http://localhost:3500/
+Authorization: Bearer JWT_TOKEN
+
+###
+
+POST http://localhost:3500/users/
+Content-Type: application/json
+
+{   
+    "username":"veerendra44",
+    "password": "2023",
+    "gender": "Male",
+    "location":"hyderabad",
+    "mobile_number": "9898980003"
+}
+
+
+###
+
+POST http://localhost:3500/login/
+Content-Type: application/json
+
+{
+    "username":"veerendra45",
+    "password": "2023"
+}
