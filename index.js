@@ -5,6 +5,8 @@ const sqlite3 = require("sqlite3");
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const { format } = require('date-fns');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const path = require("path")
 
@@ -12,7 +14,11 @@ const path = require("path")
 const app = express();
 
 // middlewares
+app.use(cors());
 app.use(express.json()); 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 const dbPath = path.join(__dirname,"contentSharingPlatform.db")
 let db = null 
@@ -91,13 +97,14 @@ app.post('/users', async(request,response)=>{
 
         }else{
             response.status(400);
-            response.send("User already exists");
+            response.send({"error_msg":"User already exists"});
         }
         
 
     }catch(e){
-        response.status(400);
         console.log(`Error While Registering the User ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -105,6 +112,7 @@ app.post('/users', async(request,response)=>{
 app.post('/login', async(request, response)=>{
     try{
         const {username, password} = request.body;
+        // console.log(username,password, request.body)
         const selectUserQuery =`
             SELECT * FROM user WHERE username = '${username}';
         `;
@@ -112,7 +120,7 @@ app.post('/login', async(request, response)=>{
         
         if (dbUser === undefined){
             response.status(400);
-            response.send('Invalid User');
+            response.send({"error_msg":'Invalid Username'});
         }else{
             const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
             if(isPasswordMatched === true){
@@ -124,13 +132,15 @@ app.post('/login', async(request, response)=>{
 
             }else{
                 response.status(400);
-                response.send('Invalid Password');
+                response.send({"error_msg":'Invalid Password'});
             }
 
         }
 
     }catch(e){
         console.log(`Error when login ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -156,6 +166,7 @@ app.post('/post/',authenticateToken, async (request, response)=>{
                 );
         `;
         await db.run(createPostQuery);
+        response.status(201)
         response.send("post created successfully");
     }catch(e){
         console.log(`Error when creating post ${e.message}`);
@@ -222,6 +233,13 @@ app.post('/like-post/',authenticateToken, async(request ,response)=>{
         const userId = dbUser.id;
         const formattedDateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         
+        //checking is user is already liked the post
+        const getSelectedLikeQuery = `
+            SELECT * FROM like WHERE user_id = ${userId} AND post_id = ${postId};
+        `;
+        const isUserLikedAlready = await db.get(getSelectedLikeQuery);
+        // console.log(isUserLikedAlready);
+        if(isUserLikedAlready === undefined){
         const createLikePostQuery = `
             INSERT INTO 
                 like (post_id, user_id, date_time)
@@ -233,11 +251,61 @@ app.post('/like-post/',authenticateToken, async(request ,response)=>{
                 );
         `;
         await db.run(createLikePostQuery);
+        response.status(201);
         response.send('Post Liked Successfully');
+                }else{
+                    response.status(400);
+                    response.send('Post Already Liked');
+                }
+       
     }catch(e){
         console.log(`Error when liking the post: ${e.message}`);
     }
 });
 
+// deleting a like 
+app.delete('/like-post/:likeId/', authenticateToken, async(request, response)=>{
+    try{
+        const {likeId} = request.params
+        const deleteSelectedLikeQuery = `
+            DELETE FROM like WHERE like_id = ${likeId};
+        `;
+        await db.run(deleteSelectedLikeQuery);
+        response.send("Like deleted successfully")
+    }catch(e){
+        console.log(`Error when updating the post: ${e.message}`);
+    }
+});
 
+//creating new reply
+app.post('/reply/',authenticateToken, async (request, response)=>{
+    try{
+        const {reply, postId} = request.body;
+        const username = request.username
+        const selectUserQuery = `
+            SELECT * FROM user where username = '${username}';
+        `;
+        const userDetails = await db.get(selectUserQuery);
+        const userId = userDetails.id;
+        const formattedDateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        
+        const createReplyQuery = `
+            INSERT INTO 
+                reply (post_id, reply ,user_id, date_time)
+            VALUES
+                (${postId},
+                    '${reply}',
+                ${userId},
+                '${formattedDateTime}'
+                );
+        `;
+        await db.run(createReplyQuery);
+        response.status(201)
+        response.send("reply created successfully");
+    }catch(e){
+        console.log(`Error when creating reply ${e.message}`);
+    }
+});
+
+//exporting app
 module.exports = app
