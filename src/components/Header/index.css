@@ -1,0 +1,198 @@
+.header-nav-bg-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 64px;
+    box-shadow: 0px 4px 6px 0px #bfbfbf;
+    padding-left: 24px;
+    padding-right: 0px;
+  }
+  .header-nav-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+  
+    justify-content: space-between;
+  }
+  
+  @media screen and (min-width: 1020px) {
+    .header-nav-container {
+      padding-left: 150px;
+      padding-right: 100px;
+    }
+  }
+  
+  .website-logo-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .link-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .search-link-container {
+    height: 100%;
+  }
+  .header-website-logo {
+    width: 36px;
+    height: 20px;
+    margin-right: 12px;
+  }
+  @media screen and (min-width: 576px) {
+    .header-website-logo {
+      width: 60px;
+      height: 30px;
+    }
+  }
+  .header-website-name {
+    color: #262626;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px; /* 120% */
+  }
+  
+  .header-options-bg-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .options-list-for-large-devices {
+    display: none;
+  }
+  @media screen and (min-width: 768px) {
+    .options-list-for-large-devices {
+      display: flex;
+      align-items: center;
+    }
+  }
+  
+  .option-item-container {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+    list-style-type: none;
+  }
+  .search-element-container {
+    width: 214px;
+    height: 28px;
+    border-radius: 3px;
+    border: 1px solid #dbdbdb;
+    background-color: #fafafa;
+  }
+  .search-input-element {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding-left: 12px;
+    color: #989898;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+  .search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    height: 100%;
+    cursor: pointer;
+    border: none;
+    width: 35px;
+  }
+  
+  .search-icon {
+    color: #989898;
+    width: 10px;
+    height: 10px;
+  }
+  .option-text {
+    color: #262626;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px; /* 128.571% */
+  }
+  .active-option {
+    color: #4094ef;
+  }
+  .header-logout-button {
+    width: 86px;
+    height: 32px !important;
+    display: inline-flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    border-radius: 6px;
+  }
+  
+  .options-list-for-small-device {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .menu-pop-up-button {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 40px;
+    height: 30px;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+  }
+  .menu-icon {
+    font-size: 24px;
+  }
+  .options-list-for-small-device {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  @media screen and (min-width: 768px) {
+    .options-list-for-small-device {
+      display: none;
+    }
+  }
+  
+  .modal-bg-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 120px;
+    padding-bottom: 15px;
+  }
+  
+  .modal-options-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    padding-left: 0px;
+  }
+  .search-mini-width {
+    width: 80%;
+  }
+  .close-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+    border: none;
+  }
