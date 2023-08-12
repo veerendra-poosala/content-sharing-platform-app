@@ -135,7 +135,7 @@ app.post('/login', async(request, response)=>{
 });
 
 //creating new post 
-app.post('/post',authenticateToken, async (request, response)=>{
+app.post('/post/',authenticateToken, async (request, response)=>{
     try{
         const {post} = request.body;
         const username = request.username
@@ -163,11 +163,81 @@ app.post('/post',authenticateToken, async (request, response)=>{
 });
 
 // getting posts list
+app.get('/post/',authenticateToken, async(request, response)=>{
+    try{
+        const {
+            search_q = ""
+        } = request.query
+        const getAllPostsQuery = `
+            SELECT * FROM post
+            WHERE UPPER(post) LIKE UPPER('%${search_q}%');
+        `;
+        const dbObject = await db.all(getAllPostsQuery);
+
+        response.send(dbObject);
+
+    }catch(e){
+        console.log(`Error When getting the posts list: ${e.message}`);
+    }
+});
 
 // updating post 
+app.put('/post/:postId/', authenticateToken, async(request, response)=>{
+    try{
+        const {post} = request.body;
+        const {postId} = request.params
+        const updateSelectedPostQuery = `
+            UPDATE post SET post = '${post}' WHERE post_id = ${postId};
+        `;
+        await db.run(updateSelectedPostQuery);
+        response.send("Post updated successfully")
+    }catch(e){
+        console.log(`Error when updating the post: ${e.message}`);
+    }
+});
 
 // deleting post
+app.delete('/post/:postId/', authenticateToken, async(request, response)=>{
+    try{
+        const {postId} = request.params
+        const deleteSelectedPostQuery = `
+            DELETE FROM post WHERE post_id = ${postId};
+        `;
+        await db.run(deleteSelectedPostQuery);
+        response.send("Post deleted successfully")
+    }catch(e){
+        console.log(`Error when updating the post: ${e.message}`);
+    }
+});
 
 // creating new like
+app.post('/like-post/',authenticateToken, async(request ,response)=>{
+    try{
+        const {postId} = request.body;
+        const username = request.username;
+        const selectUserQuery = `
+            SELECT * FROM user WHERE username = '${username}';
+        `;
+        const dbUser = await db.get(selectUserQuery);
+        const userId = dbUser.id;
+        const formattedDateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        
+        const createLikePostQuery = `
+            INSERT INTO 
+                like (post_id, user_id, date_time)
+            VALUES
+                (
+                    ${postId},
+                    ${userId},
+                    '${formattedDateTime}'
+                );
+        `;
+        await db.run(createLikePostQuery);
+        response.send('Post Liked Successfully');
+    }catch(e){
+        console.log(`Error when liking the post: ${e.message}`);
+    }
+});
+
 
 module.exports = app
