@@ -5,6 +5,8 @@ const sqlite3 = require("sqlite3");
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const { format } = require('date-fns');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const path = require("path")
 
@@ -12,7 +14,11 @@ const path = require("path")
 const app = express();
 
 // middlewares
+app.use(cors());
 app.use(express.json()); 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 const dbPath = path.join(__dirname,"contentSharingPlatform.db")
 let db = null 
@@ -91,13 +97,14 @@ app.post('/users', async(request,response)=>{
 
         }else{
             response.status(400);
-            response.send("User already exists");
+            response.send({"error_msg":"User already exists"});
         }
         
 
     }catch(e){
-        response.status(400);
         console.log(`Error While Registering the User ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -105,6 +112,7 @@ app.post('/users', async(request,response)=>{
 app.post('/login', async(request, response)=>{
     try{
         const {username, password} = request.body;
+        // console.log(username,password, request.body)
         const selectUserQuery =`
             SELECT * FROM user WHERE username = '${username}';
         `;
@@ -112,7 +120,7 @@ app.post('/login', async(request, response)=>{
         
         if (dbUser === undefined){
             response.status(400);
-            response.send('Invalid User');
+            response.send({"error_msg":'Invalid Username'});
         }else{
             const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
             if(isPasswordMatched === true){
@@ -124,13 +132,15 @@ app.post('/login', async(request, response)=>{
 
             }else{
                 response.status(400);
-                response.send('Invalid Password');
+                response.send({"error_msg":'Invalid Password'});
             }
 
         }
 
     }catch(e){
         console.log(`Error when login ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
