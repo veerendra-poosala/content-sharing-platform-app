@@ -36,7 +36,7 @@ Content-Type: application/json
     "post" : "I LOve My India"
 }
 ###
-GET  http://localhost:3500/post?search_q=love
+GET  http://localhost:3500/post?search_q=
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
 
 ###
@@ -58,7 +58,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZ
 Content-Type: application/json
 
 {
-    "postId" : 6
+    "postId" : 3
 }
 ###
 DELETE   http://localhost:3500/like-post/5/

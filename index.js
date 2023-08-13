@@ -48,12 +48,12 @@ const authenticateToken = (request, response, next) => {
     }
     if (jwtToken === undefined) {
       response.status(401);
-      response.send("Invalid JWT Token");
+      response.send({"error_msg":"Invalid JWT Token"});
     } else {
       jwt.verify(jwtToken, "SET_PRODUCTION_SECRET_KEY_HERE", async (error, payload) => {
         if (error) {
           response.status(401);
-          response.send("Invalid JWT Token");
+          response.send({"error_msg":"Invalid JWT Token"});
         } else {
           request.username = payload.username;
           next();
@@ -63,7 +63,7 @@ const authenticateToken = (request, response, next) => {
   };
 
 app.get('/', authenticateToken,async(request,response)=>{
-    response.send("Server running successfully")
+    response.send({"success_msg":"Server running successfully"})
 });
 
 //creating an api for user registration
@@ -93,7 +93,7 @@ app.post('/users', async(request,response)=>{
                 );
             `;
             await db.run(createUserQuery);
-            response.send("User created successfully");
+            response.send({"success_msg":"User created successfully"});
 
         }else{
             response.status(400);
@@ -167,9 +167,11 @@ app.post('/post/',authenticateToken, async (request, response)=>{
         `;
         await db.run(createPostQuery);
         response.status(201)
-        response.send("post created successfully");
+        response.send({"success_msg":"post created successfully"});
     }catch(e){
         console.log(`Error when creating post ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -180,15 +182,41 @@ app.get('/post/',authenticateToken, async(request, response)=>{
             search_q = ""
         } = request.query
         const getAllPostsQuery = `
-            SELECT * FROM post
-            WHERE UPPER(post) LIKE UPPER('%${search_q}%');
-        `;
+        SELECT 
+            post.post_id as post_id,
+            post.post as post,
+            user.username as username,
+            post.date_time as date_time,
+            COUNT(like.post_id) as likes_count,
+            '[' || GROUP_CONCAT('{"reply_id": ' || reply.reply_id || ', "reply": "' || reply.reply || '", "reply_date_time": "' || reply.date_time || '"}') || ']' as replies
+        FROM 
+            post 
+        INNER JOIN 
+            user 
+        ON post.user_id = user.id
+        LEFT JOIN 
+            like
+        ON post.post_id = like.post_id
+        LEFT JOIN 
+            reply
+        ON post.post_id = reply.post_id
+        WHERE UPPER(post.post) LIKE UPPER('%${search_q}%')
+        GROUP BY 
+            post.post_id, post.post, user.username, post.date_time
+        ORDER BY 
+            date_time DESC;
+            `;
         const dbObject = await db.all(getAllPostsQuery);
-
+        dbObject.forEach(post => {
+            post.replies = JSON.parse(post.replies);
+        });
+        
         response.send(dbObject);
 
     }catch(e){
         console.log(`Error When getting the posts list: ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -201,9 +229,11 @@ app.put('/post/:postId/', authenticateToken, async(request, response)=>{
             UPDATE post SET post = '${post}' WHERE post_id = ${postId};
         `;
         await db.run(updateSelectedPostQuery);
-        response.send("Post updated successfully")
+        response.send({"success_msg":"Post updated successfully"})
     }catch(e){
         console.log(`Error when updating the post: ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -215,9 +245,11 @@ app.delete('/post/:postId/', authenticateToken, async(request, response)=>{
             DELETE FROM post WHERE post_id = ${postId};
         `;
         await db.run(deleteSelectedPostQuery);
-        response.send("Post deleted successfully")
+        response.send({"success_msg":"Post deleted successfully"})
     }catch(e){
         console.log(`Error when updating the post: ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -252,14 +284,16 @@ app.post('/like-post/',authenticateToken, async(request ,response)=>{
         `;
         await db.run(createLikePostQuery);
         response.status(201);
-        response.send('Post Liked Successfully');
+        response.send({"success_msg":'Post Liked Successfully'});
                 }else{
                     response.status(400);
-                    response.send('Post Already Liked');
+                    response.send({"error_msg":'Post Already Liked'});
                 }
        
     }catch(e){
         console.log(`Error when liking the post: ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -271,9 +305,11 @@ app.delete('/like-post/:likeId/', authenticateToken, async(request, response)=>{
             DELETE FROM like WHERE like_id = ${likeId};
         `;
         await db.run(deleteSelectedLikeQuery);
-        response.send("Like deleted successfully")
+        response.send({"success_msg":"Like deleted successfully"})
     }catch(e){
         console.log(`Error when updating the post: ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
@@ -301,9 +337,11 @@ app.post('/reply/',authenticateToken, async (request, response)=>{
         `;
         await db.run(createReplyQuery);
         response.status(201)
-        response.send("reply created successfully");
+        response.send({"success_msg":"reply created successfully"});
     }catch(e){
         console.log(`Error when creating reply ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});
     }
 });
 
