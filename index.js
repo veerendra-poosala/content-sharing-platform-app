@@ -275,6 +275,7 @@ app.put('/post/:postId/', authenticateToken, async(request, response)=>{
             UPDATE post SET post = '${post}' WHERE post_id = ${postId};
         `;
         await db.run(updateSelectedPostQuery);
+        console.log("post updated successfully")
         response.send({"success_msg":"Post updated successfully"})
     }catch(e){
         console.log(`Error when updating the post: ${e.message}`);
