@@ -1,4 +1,9 @@
 ###
+GET http://localhost:3500/user-details
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
+
+
+###
 
 GET http://localhost:3500/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
@@ -9,11 +14,11 @@ POST http://localhost:3500/users/
 Content-Type: application/json
 
 {   
-    "username":"veerendra44",
+    "username":"ramana",
     "password": "2023",
     "gender": "Male",
     "location":"hyderabad",
-    "mobile_number": "9898980003"
+    "mobile_number": "9898980004"
 }
 
 
@@ -58,10 +63,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZ
 Content-Type: application/json
 
 {
-    "postId" : 3
+    "postId" : 12
 }
 ###
-DELETE   http://localhost:3500/like-post/5/
+DELETE   http://localhost:3500/like-post/10/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
 
 ###

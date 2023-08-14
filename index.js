@@ -144,6 +144,30 @@ app.post('/login', async(request, response)=>{
     }
 });
 
+// getting logged user details 
+app.get('/user-details', authenticateToken, async(request, response)=>{
+    try{
+        const username = request.username;
+        const selectUserQuery = `
+            SELECT * FROM user WHERE username = '${username}';
+        `;
+        const dbUser = await db.get(selectUserQuery);
+        const modifiedDbObject = {
+            "id" : dbUser.id,
+            "username" : dbUser.username,
+            "gender" : dbUser.gender,
+            "location" : dbUser.location,
+            "mobile_number" : dbUser.mobile_number
+        }
+        response.send(modifiedDbObject)
+
+    }catch(e){
+        console.log(`Error when login ${e.message}`);
+        response.status(500);
+        response.send({"error_msg":"Internal Server Error"});     
+    }
+});
+
 //creating new post 
 app.post('/post/',authenticateToken, async (request, response)=>{
     try{
@@ -175,50 +199,72 @@ app.post('/post/',authenticateToken, async (request, response)=>{
     }
 });
 
+
 // getting posts list
-app.get('/post/',authenticateToken, async(request, response)=>{
-    try{
-        const {
-            search_q = ""
-        } = request.query
+app.get('/post/', authenticateToken, async (request, response) => {
+    try {
+        const { search_q = "" } = request.query;
+        
+        // Getting user data
+        const username = request.username;
+        const selectUserQuery = `
+            SELECT id FROM user WHERE username = '${username}';
+        `;
+        const dbUser = await db.get(selectUserQuery);
+        const userId = dbUser.id;
+        
+        // Getting all the posts data
         const getAllPostsQuery = `
-        SELECT 
-            post.post_id as post_id,
-            post.post as post,
-            user.username as username,
-            post.date_time as date_time,
-            COUNT(like.post_id) as likes_count,
-            '[' || GROUP_CONCAT('{"reply_id": ' || reply.reply_id || ', "reply": "' || reply.reply || '", "reply_date_time": "' || reply.date_time || '"}') || ']' as replies
-        FROM 
-            post 
-        INNER JOIN 
-            user 
-        ON post.user_id = user.id
-        LEFT JOIN 
-            like
-        ON post.post_id = like.post_id
-        LEFT JOIN 
-            reply
-        ON post.post_id = reply.post_id
-        WHERE UPPER(post.post) LIKE UPPER('%${search_q}%')
-        GROUP BY 
-            post.post_id, post.post, user.username, post.date_time
-        ORDER BY 
-            date_time DESC;
-            `;
+            SELECT 
+                post.post_id as post_id,
+                post.post as post,
+                user.username as username,
+                post.date_time as date_time,
+                COUNT(like.post_id) as likes_count,
+                '[' || GROUP_CONCAT('{"reply_id": ' || reply.reply_id || ', "reply": "' || reply.reply || '", "replied_by": "' || u.username || '" ,"reply_date_time": "' || reply.date_time || '"}') || ']' as replies,
+                CASE WHEN liked.user_id IS NOT NULL THEN 1 ELSE 0 END as like_status
+            FROM 
+                post 
+            INNER JOIN 
+                user 
+            ON post.user_id = user.id
+            LEFT JOIN 
+                like
+            ON post.post_id = like.post_id
+            LEFT JOIN 
+                reply
+            ON post.post_id = reply.post_id
+            LEFT JOIN
+                user AS u
+            ON reply.user_id = u.id
+            LEFT JOIN
+                (
+                    SELECT post_id, user_id
+                    FROM like
+                    WHERE user_id = ${userId}
+                ) AS liked
+            ON post.post_id = liked.post_id
+            WHERE UPPER(post.post) LIKE UPPER('%${search_q}%')
+            GROUP BY 
+                post.post_id, post.post, user.username, post.date_time
+            ORDER BY 
+                date_time DESC;
+        `;
+        
         const dbObject = await db.all(getAllPostsQuery);
+        
         dbObject.forEach(post => {
             post.replies = JSON.parse(post.replies);
         });
         
         response.send(dbObject);
-
-    }catch(e){
+    } catch (e) {
         console.log(`Error When getting the posts list: ${e.message}`);
         response.status(500);
-        response.send({"error_msg":"Internal Server Error"});
+        response.send({ "error_msg": "Internal Server Error" });
     }
 });
+
 
 // updating post 
 app.put('/post/:postId/', authenticateToken, async(request, response)=>{
@@ -298,11 +344,17 @@ app.post('/like-post/',authenticateToken, async(request ,response)=>{
 });
 
 // deleting a like 
-app.delete('/like-post/:likeId/', authenticateToken, async(request, response)=>{
+app.delete('/like-post/:postId/', authenticateToken, async(request, response)=>{
     try{
-        const {likeId} = request.params
+        const {postId} = request.params
+        const username = request.username;
+        const selectUserQuery = `
+            SELECT * FROM user WHERE username = '${username}';
+        `;
+        const dbUser = await db.get(selectUserQuery);
+        const userId = dbUser.id;
         const deleteSelectedLikeQuery = `
-            DELETE FROM like WHERE like_id = ${likeId};
+            DELETE FROM like WHERE post_id = ${postId} AND user_id = ${userId};
         `;
         await db.run(deleteSelectedLikeQuery);
         response.send({"success_msg":"Like deleted successfully"})
