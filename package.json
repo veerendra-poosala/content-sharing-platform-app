@@ -9,6 +9,7 @@
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
     "dotenv": "^16.3.1",
     "js-cookie": "^3.0.5",
+    "moment": "^2.29.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "^4.10.1",

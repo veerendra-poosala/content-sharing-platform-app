@@ -1,9 +1,11 @@
 import {Component} from 'react'
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
+import {FaSearch} from 'react-icons/fa'
 import {apiStatusConstants, PrimaryButton, RenderLoader} from '../Extras'
 
 import Header from '../Header'
+import PostDetails from '../PostItem'
 import './index.css'
 
 class Home extends Component {
@@ -13,6 +15,7 @@ class Home extends Component {
       isLoading: true,
       apiStatus: apiStatusConstants.initial,
       userPosts: [],
+      newPostText : '',
     }
   }
 
@@ -21,6 +24,9 @@ class Home extends Component {
     this.fetchUserPosts()
   }
 
+  onChangeNewPostText = (e)=>{
+    this.setState({newPostText : e.target.value})
+  }
 
 
   fetchUserPosts = async () => {
@@ -48,10 +54,11 @@ class Home extends Component {
           postId : eachPost.post_id,
           dateTime : eachPost.date_time,
           likesCount : eachPost.likes_count,
-          replies : eachPost.replies
+          replies : eachPost.replies,
+          likeStatus : eachPost.like_status === 0 ? false :true
         }))
 
-        console.log(modifiedUserPosts)
+        // console.log(modifiedUserPosts)
         // Update user posts in the context
         this.setState({
           isLoading: false,
@@ -68,6 +75,40 @@ class Home extends Component {
     } finally {
       this.setState({isLoading: false})
     }
+  }
+
+  createNewPost = async ()=>{
+    try{
+      const token = Cookies.get('csp_app_jwt_token');
+      const {newPostText} = this.state;
+      if(newPostText.trim() !== ''){
+      const postDetails = {
+        "post" : newPostText
+      }
+      const backendApiUrl = process.env.REACT_APP_API_URL
+      const url = `${backendApiUrl}/post/`
+      const options = {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        body: JSON.stringify(postDetails),
+      }
+
+      const response = await fetch(url, options)
+       await response.json()  
+      // console.log("posted message",data) 
+      if(response.ok){
+      this.setState({newPostText : ''})  
+      await this.fetchUserPosts(); 
+      }}
+    }
+    catch (e) {
+      
+      console.log('user posts fetch error', e)
+    } 
+
   }
 
   
@@ -87,7 +128,11 @@ class Home extends Component {
         return (
           <>
             {userPosts?.length > 0 ? (
-              <h1>Posts</h1>
+              <ul className='user-posts-list-bg-container'>
+                {userPosts.map(post=>(
+                  <PostDetails key={post.postId} eachPostDetails={post} />
+                ))}
+              </ul>
             ) : (
               <div className="home-no-posts-view">
                 <img
@@ -125,10 +170,31 @@ class Home extends Component {
   }
 
   render() {
+    const {newPostText} = this.state
     return (
       <>
         <Header />
         <div className="home-bg-container">
+          <div className='create-new-post-bg-container'>
+
+              <input
+                type="text"
+                className="search-input-element"
+                placeholder="Write Something Here...."
+                value={newPostText}
+                onChange={this.onChangeNewPostText}
+              />
+
+              <button
+                className="create-new-post-button"
+                onClick={this.createNewPost}
+                type="button"
+                
+              >
+                Post
+              </button>
+           
+          </div>
           {this.renderUserPosts()}
         </div>
       </>

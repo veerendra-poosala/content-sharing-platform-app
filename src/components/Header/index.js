@@ -16,11 +16,6 @@ const menuOptions = {
 }
 
 const Header = props => {
-  const logout = () => {
-    Cookies.remove('csp_app_jwt_token')
-    const {history} = props
-    history.replace('/login')
-  }
 
   const location = useLocation()
   const [searchInput, setSearchInput] = useState('')
@@ -35,6 +30,43 @@ const Header = props => {
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
+  const [userDetails, setUserDetails] = useState('');
+
+
+  const logout = () => {
+    Cookies.remove('csp_app_jwt_token')
+    const {history} = props
+    history.replace('/login')
+  }
+
+  const getUserDetails = async()=>{
+    try{
+      const token = Cookies.get('csp_app_jwt_token'); 
+        const backendApiUrl = process.env.REACT_APP_API_URL 
+        const url = `${backendApiUrl}/user-details/`
+      const options = {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`
+          }
+      }
+
+      const response = await fetch(url, options)
+      const data = await response.json()  
+      // console.log("user data",data)
+      setUserDetails(data)
+
+    }catch(e){
+      console.log('user posts fetch error', e)
+    }
+  }
+
+  useEffect(()=>{
+    getUserDetails()
+  },[])
+ 
+
+  
   const onChangeSearchCaption = event => {
     setSearchInput(event.target.value)
   }
@@ -143,7 +175,7 @@ const Header = props => {
                       : 'option-text'
                   }
                 >
-                  Profile
+                  {userDetails === '' ?menuOptions.profile: userDetails.username}
                 </p>
               </Link>
             </li>
@@ -226,7 +258,7 @@ const Header = props => {
                       : 'option-text'
                   }
                 >
-                  Profile
+                  {userDetails === '' ?menuOptions.profile: userDetails.username}
                 </p>
               </Link>
             </li>
