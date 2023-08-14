@@ -1,4 +1,3 @@
-# content-sharing-platform-app
 
 # Content Sharing Platform - Backend
 Welcome to the backend of the Content Sharing Platform project. This backend is built using Express.js and utilizes various packages to provide functionality such as authentication, database operations, and more.
