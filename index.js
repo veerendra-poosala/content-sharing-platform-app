@@ -271,12 +271,22 @@ app.put('/post/:postId/', authenticateToken, async(request, response)=>{
     try{
         const {post} = request.body;
         const {postId} = request.params
-        const updateSelectedPostQuery = `
-            UPDATE post SET post = '${post}' WHERE post_id = ${postId};
+        const username = request.username;
+        const selectUserQuery = `
+            SELECT * FROM user WHERE username = '${username}';
         `;
-        await db.run(updateSelectedPostQuery);
-        console.log("post updated successfully")
+        const dbUser = await db.get(selectUserQuery);
+        // console.log(dbUser.id)
+        const updateSelectedPostQuery = `
+            UPDATE post SET post = '${post}' WHERE post_id = ${postId} AND user_id=${dbUser.id};
+        `;
+        const dbResponse = await db.run(updateSelectedPostQuery);
+       if(dbResponse?.changes === 1){
         response.send({"success_msg":"Post updated successfully"})
+       }else{
+        response.status(400);
+        response.send({error_msg: 'Only Authorized can edit'})
+       }
     }catch(e){
         console.log(`Error when updating the post: ${e.message}`);
         response.status(500);
@@ -288,11 +298,24 @@ app.put('/post/:postId/', authenticateToken, async(request, response)=>{
 app.delete('/post/:postId/', authenticateToken, async(request, response)=>{
     try{
         const {postId} = request.params
-        const deleteSelectedPostQuery = `
-            DELETE FROM post WHERE post_id = ${postId};
+        const username = request.username;
+        const selectUserQuery = `
+            SELECT * FROM user WHERE username = '${username}';
         `;
-        await db.run(deleteSelectedPostQuery);
+        const dbUser = await db.get(selectUserQuery);
+        const deleteSelectedPostQuery = `
+            DELETE FROM post WHERE post_id = ${postId} AND user_id=${dbUser.id};
+        `;
+       
+        const dbResponse = await db.run(deleteSelectedPostQuery);
+        console.log(dbResponse)
+       if(dbResponse?.changes === 1){
         response.send({"success_msg":"Post deleted successfully"})
+       }else{
+        response.status(400);
+        response.send({error_msg: 'Only Authorized can delete the post'})
+       }
+       
     }catch(e){
         console.log(`Error when updating the post: ${e.message}`);
         response.status(500);
