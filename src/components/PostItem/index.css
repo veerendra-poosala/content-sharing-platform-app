@@ -97,6 +97,7 @@
     
     background-color: #262626;
     color: #fff;
+    position: relative;
   }
   .post-text{
     color: #fff;
@@ -166,4 +167,38 @@
   }
   .like-icon {
     font-size: 24px;
+  }
+
+  .modal-post-item-options{
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  .post-item-optons-button{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+  }
+  .text-area-element{
+    min-width: 100%;
+    min-height: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    padding-left: 16px;
+    background-color: #262626;
+    color: #fff;
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 18px; /* 128.571% */
+    margin-top: 0px;
   }

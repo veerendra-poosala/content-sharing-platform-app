@@ -1,15 +1,18 @@
 import React from 'react'
+import { withRouter } from 'react-router-dom/cjs/react-router-dom.min';
 import moment from 'moment';
 import {v4 as uuid} from 'uuid'
 import Cookies from 'js-cookie'
 import {BsHeart} from 'react-icons/bs'
 import {BiShareAlt,BiDotsVerticalRounded} from 'react-icons/bi'
 import {FcLike} from 'react-icons/fc'
-import {FaRegComment, FaShareAlt} from 'react-icons/fa'
+import {FaRegComment} from 'react-icons/fa'
+import Popup from 'reactjs-popup'
+import 'reactjs-popup/dist/index.css'
 import './index.css'
 
 const PostDetails = props => {
-  const {eachPostDetails} = props
+  const {eachPostDetails, deletePost} = props
   const {
     replies,
     dateTime,
@@ -27,7 +30,61 @@ const PostDetails = props => {
   const [postLikesCount, setPostLikesCount] = React.useState({
     postLikesCount: likesCount,
   })
+  const [editPost, setEditPost] = React.useState({editPost: false});
+  const[postText, setPostText] = React.useState(post);
 
+  const toggleEditPost = ()=>{
+    setEditPost({
+      editPost : true
+    })
+  }
+
+  const onChangePostText = (e)=>{
+    setPostText(e.target.value)
+  }
+
+  const updatePostTextGlobally = async(e)=>{
+    try{
+      
+      
+        const token = Cookies.get('csp_app_jwt_token');
+      if(postText.trim() !== ''){
+        // console.log(postText, typeof(postText))
+      const postDetails = {
+        "post" : String(postText)
+      }
+      const backendApiUrl = process.env.REACT_APP_API_URL
+      const url = `${backendApiUrl}/post/${postId}`
+      const options = {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        body: JSON.stringify(postDetails),
+      }
+
+      
+      
+      const response = await fetch(url, options)
+       await response.json()  
+      // console.log("posted message",data)
+       
+      if(response.ok){
+        setEditPost({editPost : false})
+      }
+    
+    } 
+  
+    }
+    catch (e) {
+      
+      console.log('user posts fetch error', e)
+    } finally{
+      setEditPost({editPost : false})
+    }
+
+  }
   const toggleThePostLikeStatus = async ()=>{
     try{
         const token = Cookies.get('csp_app_jwt_token'); 
@@ -86,60 +143,12 @@ const PostDetails = props => {
 
   }
 
-  /*
-  const formattedComments = replies.map(comment => ({
-    comment: comment.comment,
-    commentedUserId: comment.user_id,
-    commentedUserName: comment.user_name,
-  }))
-  
+  React.useEffect(()=>{console.log('')},[editPost]);
 
-  const [likeStatus, setLikeStatus] = React.useState(false)
-  const [postLikesCount, setPostLikesCount] = React.useState({
-    postLikesCount: likesCount,
-  })
-  // const likeStatus = true
-  const postLikeStatus = async () => {
-    try {
-      const url = `https://apis.ccbp.in/insta-share/posts/${postId}/like`
-      const token = Cookies.get('jwt_token')
-      const likeObj = {
-        like_status: !likeStatus,
-      }
-
-      const options = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          like_status: !likeStatus,
-        }),
-      }
-      const response = await fetch(url, options)
-      const data = await response.json()
-
-      if (response.ok) {
-        setLikeStatus(data.message === 'Post has been liked')
-        if (data.message === 'Post has been liked') {
-          setPostLikesCount(prev => ({
-            ...prev,
-            postLikesCount: prev.postLikesCount + 1,
-          }))
-        } else {
-          setPostLikesCount(prev => ({
-            ...prev,
-            postLikesCount: prev.postLikesCount - 1,
-          }))
-        }
-      }
-    } catch (e) {
-      console.log('like status error', e)
-    }
+  const deletePostByUsingPostId = ()=>{
+      deletePost(postId);
   }
 
-  */
-  
   return (
     <li className="post-item-bg-container">
       <div className='post-profile-pic-bg-container'>
@@ -151,10 +160,54 @@ const PostDetails = props => {
           />
           <h1 className="post-creator-name">{username}</h1>
         </div>
-        <BiDotsVerticalRounded />
+
+        {/* options pop up */}
+        <Popup
+            menu
+            position="bottom right"
+            contentStyle={{
+              padding: '0px',
+              border: 'none',
+              width: '100px',
+              marginTop: '0px',
+              display: 'flex',
+              paddingLeft : '4px',
+              paddingRight: '0px',
+              
+              boxSizing: 'border-box',
+            }}
+            arrow={false}
+            trigger={
+              <button type="button" className="menu-pop-up-button">
+                <BiDotsVerticalRounded />
+              </button>
+            }
+          >
+            {close =>{ return(
+              <div className='modal-post-item-options'>
+                <button type='button' onClick={toggleEditPost} className='post-item-optons-button'>
+                    EDIT
+                </button>
+                <hr style={{height: '1.5px', width: '100%', color: '#000000'}}/>
+              
+                <button type='button' onClick={deletePostByUsingPostId} className='post-item-optons-button'>
+                    DELETE
+                </button>
+              </div>
+
+            )
+            }
+            }
+
+          </Popup>
+        
         </div>
       <div className='post-text-bg-container'>
-      <p className="post-text">{post}</p>
+        {
+          editPost.editPost === false ?
+      (<p className="post-text">{postText}</p>) :
+      (<textarea className='text-area-element' autoFocus value={postText} onChange={onChangePostText} onBlur={updatePostTextGlobally} ></textarea>)
+        }
       </div>
       <div className="post-text-card">
         <div className="post-icons-container">
@@ -199,4 +252,4 @@ const PostDetails = props => {
   )
 }
 
-export default PostDetails
+export default withRouter(PostDetails)

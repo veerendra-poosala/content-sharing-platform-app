@@ -1,7 +1,7 @@
 import {Component} from 'react'
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
-import {FaSearch} from 'react-icons/fa'
+
 import {apiStatusConstants, PrimaryButton, RenderLoader} from '../Extras'
 
 import Header from '../Header'
@@ -111,7 +111,34 @@ class Home extends Component {
 
   }
 
-  
+  deletePost = async(id) =>{
+    try{
+      const token = Cookies.get('csp_app_jwt_token');
+      
+      const backendApiUrl = process.env.REACT_APP_API_URL
+      const url = `${backendApiUrl}/post/${id}`
+      const options = {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          }
+        
+      }
+
+      const response = await fetch(url, options)
+       await response.json()  
+      // console.log("posted message",data) 
+      if(response.ok){
+        
+      await this.fetchUserPosts(); 
+      }
+    }
+    catch (e) {
+      
+      console.log('user post delete error', e)
+    } 
+
+  }
 
   renderUserPosts = () => {
     const {userPosts, isLoading, apiStatus} = this.state
@@ -130,7 +157,7 @@ class Home extends Component {
             {userPosts?.length > 0 ? (
               <ul className='user-posts-list-bg-container'>
                 {userPosts.map(post=>(
-                  <PostDetails key={post.postId} eachPostDetails={post} />
+                  <PostDetails key={post.postId} eachPostDetails={post} deletePost={this.deletePost}/>
                 ))}
               </ul>
             ) : (

@@ -1,5 +1,5 @@
 import {Link, withRouter, useLocation} from 'react-router-dom'
-import {useState, useEffect, useContext} from 'react'
+import {useState, useEffect} from 'react'
 import Cookies from 'js-cookie'
 import {FaSearch} from 'react-icons/fa'
 import {FiMenu} from 'react-icons/fi'
@@ -7,7 +7,7 @@ import {AiFillCloseCircle} from 'react-icons/ai'
 
 import './index.css'
 
-import {PrimaryButton, apiStatusConstants} from '../Extras'
+import {PrimaryButton} from '../Extras'
 
 const menuOptions = {
   home: 'Home',
@@ -20,13 +20,13 @@ const Header = props => {
   const location = useLocation()
   const [searchInput, setSearchInput] = useState('')
   const [activeOption, setActiveOption] = useState('')
-  const [searchToggle, setSearchToggle] = useState(false)
+  
   let defaultMenuOption ;
    switch (location.pathname) {
     case '/':
      defaultMenuOption = menuOptions.home
       break;
-      case '/profile':
+      case '/my-profile':
      defaultMenuOption = menuOptions.profile
       break;
       
