@@ -18,8 +18,7 @@ npm (Node Package Manager)
 # Available Endpoints
 #### 1) getting logged user details
 GET http://localhost:3500/user-details <br/>
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
-
+Authorization: Bearer JWT_TOKEN
 ##### sample output: 
 ###
         
@@ -33,8 +32,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZ
 
 #### 2) getting logged user details
 
-    POST http://localhost:3500/users/
-    Content-Type: application/json
+    POST http://localhost:3500/users/  <br/>
+    Content-Type: application/json  <br/>
     
     {   
         "username":"ramana",
@@ -57,8 +56,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZ
     }
 
 #### 3) user login api
-POST http://localhost:3500/login/
-Content-Type: application/json
+POST http://localhost:3500/login/  <br/>
+Content-Type: application/json  <br/>
 
 {
     "username":"veerendra45",
@@ -71,16 +70,16 @@ Content-Type: application/json
     }
 
 #### 4) create a new post on post table
-POST  http://localhost:3500/post/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
-Content-Type: application/json
+POST  http://localhost:3500/post/  <br/>
+Authorization: Bearer JWT_TOKEN  <br/>
+Content-Type: application/json  <br/>
 
 {
     "post" : "I LOve My India"
 }
 #### 5) get all the posts 
-GET  http://localhost:3500/post?search_q=
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
+GET  http://localhost:3500/post?search_q=  <br/>
+Authorization: Bearer JWT_TOKEN  <br/>
 ##### sample result:
 #
     [
@@ -130,34 +129,34 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZ
       ...
       ]
 ###
-PUT   http://localhost:3500/post/6/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
-Content-Type: application/json
+PUT   http://localhost:3500/post/6/  <br/>
+Authorization: Bearer JWT_TOKEN  <br/>
+Content-Type: application/json  <br/>
 
 {
     "post" : "I LOve My India"
 }
 
 ###
-DELETE   http://localhost:3500/post/6/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
+DELETE   http://localhost:3500/post/6/  <br/>
+Authorization: Bearer  <br/>
 
 ###
-POST  http://localhost:3500/like-post/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
-Content-Type: application/json
+POST  http://localhost:3500/like-post/  <br/>
+Authorization: Bearer JWT_TOKEN  <br/>
+Content-Type: application/json  <br/>
 
 {
     "postId" : 12
 }
 ###
-DELETE   http://localhost:3500/like-post/10/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
+DELETE   http://localhost:3500/like-post/10/  <br/>
+Authorization: Bearer JWT_TOKEN  <br/>
 
 ###
-POST  http://localhost:3500/reply/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
-Content-Type: application/json
+POST  http://localhost:3500/reply/  <br/>
+Authorization: Bearer  <br/>
+Content-Type: application/json  <br/>
 
 {
     "postId" : 3,
