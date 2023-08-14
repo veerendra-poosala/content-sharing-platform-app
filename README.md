@@ -17,7 +17,7 @@ npm (Node Package Manager)
     nodemon index.js 
 # Available Endpoints
 #### 1) getting logged user details
-GET http://localhost:3500/user-details
+GET http://localhost:3500/user-details <br/>
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZlZXJlbmRyYTQ1IiwiaWF0IjoxNjkxNzc4NTk1fQ.-_LN7tlpHxw8VFH4AWuz1Q3CZdFXGyZuN6HK3t5ribQ
 
 ##### sample output: 
