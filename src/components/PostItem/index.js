@@ -3,7 +3,7 @@ import moment from 'moment';
 import {v4 as uuid} from 'uuid'
 import Cookies from 'js-cookie'
 import {BsHeart} from 'react-icons/bs'
-import {BiShareAlt} from 'react-icons/bi'
+import {BiShareAlt,BiDotsVerticalRounded} from 'react-icons/bi'
 import {FcLike} from 'react-icons/fc'
 import {FaRegComment, FaShareAlt} from 'react-icons/fa'
 import './index.css'
@@ -142,7 +142,7 @@ const PostDetails = props => {
   
   return (
     <li className="post-item-bg-container">
-      
+      <div className='post-profile-pic-bg-container'>
         <div className="post-profile-pic-container">
           <img
             className="post-profile-pic"
@@ -151,7 +151,8 @@ const PostDetails = props => {
           />
           <h1 className="post-creator-name">{username}</h1>
         </div>
-      
+        <BiDotsVerticalRounded />
+        </div>
       <div className='post-text-bg-container'>
       <p className="post-text">{post}</p>
       </div>

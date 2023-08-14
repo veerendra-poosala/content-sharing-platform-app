@@ -21,8 +21,23 @@ const Header = props => {
   const [searchInput, setSearchInput] = useState('')
   const [activeOption, setActiveOption] = useState('')
   const [searchToggle, setSearchToggle] = useState(false)
+  let defaultMenuOption ;
+   switch (location.pathname) {
+    case '/':
+     defaultMenuOption = menuOptions.home
+      break;
+      case '/profile':
+     defaultMenuOption = menuOptions.profile
+      break;
+      
+  
+    default:
+      defaultMenuOption = menuOptions.search
+      break;
+  }
   const [modalMenuOptions, setModalMenuOptions] = useState(
-    location.pathname === '/' ? menuOptions.home : menuOptions.profile,
+    defaultMenuOption
+    //location.pathname === '/' ? menuOptions.home : menuOptions.profile,
   )
   const [toggleSmallNavbar, setToggleSmallNavbar] = useState({
     toggleSmallNavbar: false,
@@ -131,7 +146,7 @@ const Header = props => {
               <input
                 type="search"
                 className="search-input-element"
-                placeholder="Search Caption"
+                placeholder="Search Post"
                 value={searchInput}
                 onChange={onChangeSearchCaption}
               />

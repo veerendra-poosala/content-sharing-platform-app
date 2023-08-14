@@ -1,41 +1,38 @@
 import {Component} from 'react'
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
-import {FaSearch} from 'react-icons/fa'
 import {apiStatusConstants, PrimaryButton, RenderLoader} from '../Extras'
-
-import Header from '../Header'
 import PostDetails from '../PostItem'
+import Header from '../Header'
 import './index.css'
 
-class Home extends Component {
+class Search extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isLoading: true,
+      isLoading: false,
       apiStatus: apiStatusConstants.initial,
       userPosts: [],
-      newPostText : '',
     }
   }
 
   componentDidMount() {
-   
     this.fetchUserPosts()
   }
-
-  onChangeNewPostText = (e)=>{
-    this.setState({newPostText : e.target.value})
-  }
-
 
   fetchUserPosts = async () => {
     try {
       this.setState({isLoading: true, apiStatus: apiStatusConstants.inProgress})
 
       const token = Cookies.get('csp_app_jwt_token')
+      const {match} = this.props
+      let {text} = match.params
+      // console.log('text', text)
+      if (text === 'undefined') {
+        text = ''
+      }
       const backendApiUrl = process.env.REACT_APP_API_URL
-      const url = `${backendApiUrl}/post/`
+      const url = `${backendApiUrl}/post?search_q=${text}`
       const options = {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,41 +74,7 @@ class Home extends Component {
     }
   }
 
-  createNewPost = async ()=>{
-    try{
-      const token = Cookies.get('csp_app_jwt_token');
-      const {newPostText} = this.state;
-      if(newPostText.trim() !== ''){
-      const postDetails = {
-        "post" : String(newPostText)
-      }
-      const backendApiUrl = process.env.REACT_APP_API_URL
-      const url = `${backendApiUrl}/post/`
-      const options = {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        body: JSON.stringify(postDetails),
-      }
-
-      const response = await fetch(url, options)
-       await response.json()  
-      // console.log("posted message",data) 
-      if(response.ok){
-      this.setState({newPostText : ''})  
-      await this.fetchUserPosts(); 
-      }}
-    }
-    catch (e) {
-      
-      console.log('user posts fetch error', e)
-    } 
-
-  }
-
-  
+  // Render the user stories
 
   renderUserPosts = () => {
     const {userPosts, isLoading, apiStatus} = this.state
@@ -170,31 +133,11 @@ class Home extends Component {
   }
 
   render() {
-    const {newPostText} = this.state
     return (
       <>
         <Header />
         <div className="home-bg-container">
-          <div className='create-new-post-bg-container'>
-
-              <input
-                type="text"
-                className="search-input-element"
-                placeholder="Write Something Here...."
-                value={newPostText}
-                onChange={this.onChangeNewPostText}
-              />
-
-              <button
-                className="create-new-post-button"
-                onClick={this.createNewPost}
-                type="button"
-                
-              >
-                Post
-              </button>
-           
-          </div>
+          <h1 className="search-results-heading">Search Results</h1>
           {this.renderUserPosts()}
         </div>
       </>
@@ -202,4 +145,4 @@ class Home extends Component {
   }
 }
 
-export default Home
+export default Search

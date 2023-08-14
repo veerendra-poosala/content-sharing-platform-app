@@ -5,6 +5,8 @@ import Home from './components/Home';
 import Login from './components/Login';
 import NotFound from './components/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
+import Search from './components/Search';
+import Register from './components/Register';
 import './App.css';
 
 class App extends Component {
@@ -25,11 +27,13 @@ class App extends Component {
     return (
       <Switch>
         <Route exact path="/login" component={Login} />
+        <Route exact path="/register" component={Register} />
         <ProtectedRoute
           exact
           path="/"
           component={Home}
         />
+        <ProtectedRoute exact path="/search/:text" component={Search} />
         <Route path="/not-found" component={NotFound} />
         <Redirect to="/not-found" />
       </Switch>
