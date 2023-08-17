@@ -1,5 +1,5 @@
 
-<h3>App URL : http://18.234.135.35/ </h3>
+<h3>App URL : http://18.234.135.35/ or http://v45devops.in/ </h3>
 
 ## Available Scripts
 
